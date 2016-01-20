@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <configuration>
+        <custom-converters> <!-- these are always bi-directional -->
+            <converter type="de.luisdeltoro.calorie.LocalDateTimeTimestampConverter" >
+                <class-a>java.sql.Timestamp</class-a>
+                <class-b>java.time.LocalDateTime</class-b>
+            </converter>
+        </custom-converters>
+    </configuration>
+
+    <mapping>
+        <class-a>de.luisdeltoro.calorie.ws.dto.JournalDTO</class-a>
+        <class-b>de.luisdeltoro.calorie.model.Journal</class-b>
+
+        <field>
+            <a>personName</a>
+            <b>person.name</b>
+        </field>
+        <field>
+            <a>personAge</a>
+            <b>person.age</b>
+        </field>
+        <field>
+            <a>personHeight</a>
+            <b>person.height</b>
+        </field>
+        <field>
+            <a>personWeight</a>
+            <b>person.weight</b>
+        </field>
+    </mapping>
+
+</mappings>
