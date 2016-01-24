@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static de.luisdeltoro.calorie.Utils.CALCULATE_PATH;
@@ -63,11 +64,12 @@ public class JournalControllerTest {
                 .andReturn().getResponse().getHeader(HttpHeaders.LOCATION);
 
         // Then: the calorie journal is stored in the system
-        Journal journal = journalRepository.findByBusinessId(extractIdAsUUID(journalLocation));
-        assertThat(journal.getPerson().getName(), is(equalTo(journalDto.getPersonName())));
-        assertThat(journal.getPerson().getAge(), is(equalTo(journalDto.getPersonAge())));
-        assertThat(journal.getPerson().getHeight(), is(equalTo(journalDto.getPersonHeight())));
-        assertThat(journal.getPerson().getWeight(), is(equalTo(journalDto.getPersonWeight())));
+        Optional<Journal> journal = journalRepository.findByBusinessId(extractIdAsUUID(journalLocation));
+        assertThat(journal.isPresent(), is(true));
+        assertThat(journal.get().getPerson().getName(), is(equalTo(journalDto.getPersonName())));
+        assertThat(journal.get().getPerson().getAge(), is(equalTo(journalDto.getPersonAge())));
+        assertThat(journal.get().getPerson().getHeight(), is(equalTo(journalDto.getPersonHeight())));
+        assertThat(journal.get().getPerson().getWeight(), is(equalTo(journalDto.getPersonWeight())));
     }
 
     @Test

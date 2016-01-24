@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -65,11 +66,8 @@ public class JournalController {
     @RequestMapping(value = JOURNALS_PATH + "/{id}", method = RequestMethod.GET, produces = MIME_HEADER_V1)
     public JournalDTO getJournal(@PathVariable String id) {
         log.info(String.format("Get Journal Request received: businessId=%s", id));
-        Journal journal = journalService.getJournal(UUID.fromString(id));
-        if (journal == null) {
-            throw new ObjectNotFoundException(String.format("The requested calorie journal with id=%s does not exist", id));
-        }
-        JournalDTO journalDto = dozerBeanMapper.map(journal, JournalDTO.class);
+        Optional<Journal> journal = journalService.getJournal(UUID.fromString(id));
+        JournalDTO journalDto = dozerBeanMapper.map(journal.get(), JournalDTO.class);
         log.info(String.format("Journal successfully returned: %s", journalDto));
         return journalDto;
     }

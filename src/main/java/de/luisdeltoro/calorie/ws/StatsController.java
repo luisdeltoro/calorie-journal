@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 import java.util.UUID;
 
 import static de.luisdeltoro.calorie.Utils.MIME_HEADER_V1;
@@ -40,8 +41,8 @@ public class StatsController {
      */
     @RequestMapping(value = STATS_PATH + "/{id}", method = RequestMethod.GET, produces = MIME_HEADER_V1)
     public StatsDTO getCalorieStats(@PathVariable String id, HttpServletResponse response) {
-        log.info(String.format("Get Job Request received: id=%s ", id));
-        Stats stats = journalService.getStats(UUID.fromString(id));
-        return dozerBeanMapper.map(stats, StatsDTO.class);
+        log.info(String.format("Get Calorie Statistics Request received: id=%s ", id));
+        Optional<Stats> stats = journalService.getStats(UUID.fromString(id));
+        return dozerBeanMapper.map(stats.get(), StatsDTO.class);
     }
 }

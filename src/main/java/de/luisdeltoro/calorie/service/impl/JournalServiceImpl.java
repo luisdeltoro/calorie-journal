@@ -1,9 +1,8 @@
 package de.luisdeltoro.calorie.service.impl;
 
-import de.luisdeltoro.calorie.exception.ObjectNotFoundException;
-import de.luisdeltoro.calorie.model.Stats;
 import de.luisdeltoro.calorie.model.Journal;
 import de.luisdeltoro.calorie.model.Meal;
+import de.luisdeltoro.calorie.model.Stats;
 import de.luisdeltoro.calorie.persistence.JournalRepository;
 import de.luisdeltoro.calorie.service.api.JournalService;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +43,7 @@ public class JournalServiceImpl implements JournalService {
      */
     @Transactional
     @Override
-    public Journal getJournal(UUID journalId) {
+    public Optional<Journal> getJournal(UUID journalId) {
         return journalRepository.findByBusinessId(journalId);
     }
 
@@ -53,9 +53,9 @@ public class JournalServiceImpl implements JournalService {
     @Transactional(readOnly = false)
     @Override
     public void addMeal(UUID journalId, Meal meal) {
-        Journal journal = journalRepository.findByBusinessId(journalId);
-        journal.addMeal(meal);
-        journalRepository.save(journal);
+        Optional<Journal> journal = journalRepository.findByBusinessId(journalId);
+        journal.get().addMeal(meal);
+        journalRepository.save(journal.get());
     }
 
     /**
@@ -64,11 +64,11 @@ public class JournalServiceImpl implements JournalService {
     @Transactional(readOnly = false)
     @Override
     public UUID calculateStats(UUID journalId) {
-        Journal journal = journalRepository.findByBusinessId(journalId);
-        double averageCalories = journal.getMeals().stream().mapToInt(meal -> meal.getCalories()).average().getAsDouble();
-        double averageCarbs = journal.getMeals().stream().mapToInt(meal -> meal.getCarbs()).average().getAsDouble();
-        double averageProtein = journal.getMeals().stream().mapToInt(meal -> meal.getProtein()).average().getAsDouble();
-        double averageFats = journal.getMeals().stream().mapToInt(meal -> meal.getFats()).average().getAsDouble();
+        Optional<Journal> journal = journalRepository.findByBusinessId(journalId);
+        double averageCalories = journal.get().getMeals().stream().mapToInt(meal -> meal.getCalories()).average().getAsDouble();
+        double averageCarbs = journal.get().getMeals().stream().mapToInt(meal -> meal.getCarbs()).average().getAsDouble();
+        double averageProtein = journal.get().getMeals().stream().mapToInt(meal -> meal.getProtein()).average().getAsDouble();
+        double averageFats = journal.get().getMeals().stream().mapToInt(meal -> meal.getFats()).average().getAsDouble();
         Stats stats =  new Stats(averageCalories, averageCarbs, averageProtein, averageFats);
         UUID statsId = UUID.randomUUID();
         this.stats.put(statsId, stats);
@@ -79,10 +79,9 @@ public class JournalServiceImpl implements JournalService {
      * {@inheritDoc}
      */
     @Override
-    public Stats getStats(UUID statsId) {
+    public Optional<Stats> getStats(UUID statsId) {
         Stats stats = this.stats.get(statsId);
-        if (stats == null) throw new ObjectNotFoundException(String.format("Calorie Statistics with id '%s' do not exists ", statsId));
-        return stats;
+        return Optional.ofNullable(stats);
     }
 
     @PostConstruct

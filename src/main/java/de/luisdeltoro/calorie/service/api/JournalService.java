@@ -4,6 +4,7 @@ import de.luisdeltoro.calorie.model.Stats;
 import de.luisdeltoro.calorie.model.Journal;
 import de.luisdeltoro.calorie.model.Meal;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -23,7 +24,7 @@ public interface JournalService {
      * @param businessId the business identifier of the desired journal
      * @return the desired calorie journal
      */
-    Journal getJournal(UUID businessId);
+    Optional<Journal> getJournal(UUID businessId);
 
     /**
      * Add a meal to an existing calorie journla
@@ -44,6 +45,6 @@ public interface JournalService {
      * @param statsId the identifier of the statistics to be retrieved
      * @return the desired statistics
      */
-    Stats getStats(UUID statsId);
+    Optional<Stats> getStats(UUID statsId);
 
 }
